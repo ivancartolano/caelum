@@ -14,6 +14,7 @@ import br.com.caelum.cadastro.modelo.Aluno;
 
 public class FormularioActivity extends AppCompatActivity {
 
+    public static final String ALUNO_SELECIONADO ="alunoSelecionado";
     private FormularioHelper helper;
     private boolean d = false;
 
@@ -21,8 +22,14 @@ public class FormularioActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_formulario);
-        
+
         helper = new FormularioHelper(this);
+
+
+        Aluno aluno = (Aluno) getIntent().getSerializableExtra(ALUNO_SELECIONADO) ;
+        if (aluno != null ){
+            helper.colocaNoFormulario(aluno);
+        }
 
         Button salvar = (Button) findViewById(R.id.formulario_botao);
         salvar.setOnClickListener(new View.OnClickListener() {
@@ -31,7 +38,11 @@ public class FormularioActivity extends AppCompatActivity {
 
                 Aluno aluno = helper.pegaAlunoDoFormulario();
                 AlunoDao dao = new AlunoDao(FormularioActivity.this);
-                dao.insert(aluno);
+                if (aluno.getId() != null) {
+                    dao.alterar(aluno);
+                } else{
+                    dao.insert(aluno);
+                }
                 dao.close();
                 finish();
             }

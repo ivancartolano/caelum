@@ -84,7 +84,7 @@
         android:id="@+id/formulario_endereco" />
 
     <TextView
-        android:text="TextView"
+        android:text="Site"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/formulario_endereco"
@@ -105,7 +105,6 @@
         android:id="@+id/formulario_site" />
 
     <TextView
-        android:text="TextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/formulario_site"

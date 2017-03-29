@@ -1,22 +1,24 @@
 package br.com.caelum.cadastro.modelo;
 
+import java.io.Serializable;
+
 /**
  * Created by android7060 on 28/03/17.
  */
 
-public class Aluno {
-    private long id;
+public class Aluno implements Serializable {
+    private Long id;
     private String nome;
     private String telefone;
     private String endereco;
     private String site;
     private Double nota;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -58,5 +60,10 @@ public class Aluno {
 
     public void setNota(Double nota) {
         this.nota = nota;
+    }
+
+    @Override
+    public String toString() {
+        return id + "  " +nome;
     }
 }

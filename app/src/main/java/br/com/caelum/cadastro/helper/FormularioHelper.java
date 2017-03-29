@@ -20,6 +20,7 @@ public class FormularioHelper {
     private RatingBar nota;
     private Aluno aluno;
 
+
     public FormularioHelper(FormularioActivity form){
         nome = (EditText) form.findViewById(R.id.formulario_nome);
         telefone = (EditText) form.findViewById(R.id.formulario_telefone);
@@ -27,6 +28,16 @@ public class FormularioHelper {
         site = (EditText) form.findViewById(R.id.formulario_site);
         nota = (RatingBar) form.findViewById(R.id.formulario_nota);
         aluno = new Aluno();
+    }
+
+    public void colocaNoFormulario(Aluno aluno){
+        nome.setText(aluno.getNome());
+        telefone.setText(aluno.getTelefone());
+        endereco.setText(aluno.getEndereco());
+        site.setText(aluno.getSite());
+        nota.setProgress(aluno.getNota().intValue());
+
+        this.aluno = aluno;
     }
 
     public Aluno pegaAlunoDoFormulario(){

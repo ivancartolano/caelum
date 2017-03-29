@@ -1,7 +1,6 @@
 package br.com.caelum.cadastro;
 
 import android.content.Intent;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -14,6 +13,11 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.util.List;
+
+import br.com.caelum.cadastro.dao.AlunoDao;
+import br.com.caelum.cadastro.modelo.Aluno;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -21,25 +25,22 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        String[] alunos = {"Natalia", "Patricia", "Vanessa"};
-        ListView lista = (ListView) findViewById(R.id.listaAlunos);
-        lista.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_expandable_list_item_1,alunos));
+//        String[] alunos = {"Natalia", "Patricia", "Vanessa"};
+        final ListView lista = (ListView) findViewById(R.id.listaAlunos);
+//        lista.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_expandable_list_item_1,alunos));
 
         lista.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(MainActivity.this, "Vc clicou na posicao" + " "+position, Toast.LENGTH_LONG).show();
+                Intent edicao = new Intent(MainActivity.this, FormularioActivity.class);
+                edicao.putExtra("alunoSelecionado", (Aluno) lista.getItemAtPosition(position));
+                startActivity(edicao);
             }
         });
         registerForContextMenu(lista);
         lista.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-//                AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
-//                alert.setTitle("vc clicou longamente");
-//                alert.setMessage((String) parent.getItemAtPosition(position));
-//                alert.setNeutralButton("OK",null);
-//                alert.show();
                 return false;
             }
         });
@@ -55,10 +56,25 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public void carregaLista(){
+        ListView lista = (ListView) findViewById(R.id.listaAlunos);
+        AlunoDao dao = new AlunoDao(this);
+        List<Aluno> alunos = dao.getLista();
+        dao.close();
+        ArrayAdapter<Aluno> adapter = new ArrayAdapter<Aluno>(this, android.R.layout.simple_list_item_1, alunos);
+        lista.setAdapter(adapter);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuItem item = menu.add("MeuMenu");
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        carregaLista();
     }
 
     @Override
@@ -69,8 +85,29 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        menu.add("outro menu");
         super.onCreateContextMenu(menu, v, menuInfo);
+
+
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        final ListView lista = (ListView) findViewById(R.id.listaAlunos);
+        final Aluno alunoSlelecionado = (Aluno)  lista.getAdapter().getItem(info.position);
+        menu.add("Ligar");
+        menu.add("Enviar SMS");
+        menu.add("Achar no mapa");
+        menu.add("Navegar no site");
+        menu.add(" ");
+
+        MenuItem deletar = menu.add("Deletar");
+        deletar.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                AlunoDao dao = new AlunoDao(MainActivity.this);
+                dao.delete(alunoSlelecionado);
+                dao.close();
+                carregaLista();
+                return false;
+            }
+        });
     }
 
     @Override
