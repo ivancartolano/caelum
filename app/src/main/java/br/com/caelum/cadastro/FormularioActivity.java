@@ -1,5 +1,9 @@
 package br.com.caelum.cadastro;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -7,6 +11,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import java.io.File;
 
 import br.com.caelum.cadastro.dao.AlunoDao;
 import br.com.caelum.cadastro.helper.FormularioHelper;
@@ -17,6 +23,8 @@ public class FormularioActivity extends AppCompatActivity {
     public static final String ALUNO_SELECIONADO ="alunoSelecionado";
     private FormularioHelper helper;
     private boolean d = false;
+    private String localArquivoFoto;
+    private static final int TIRA_FOTO= 123;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +32,6 @@ public class FormularioActivity extends AppCompatActivity {
         setContentView(R.layout.activity_formulario);
 
         helper = new FormularioHelper(this);
-
 
         Aluno aluno = (Aluno) getIntent().getSerializableExtra(ALUNO_SELECIONADO) ;
         if (aluno != null ){
@@ -47,6 +54,18 @@ public class FormularioActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        Button foto = helper.getFotoButton();
+        foto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                localArquivoFoto = getExternalFilesDir(null)+ "/" +System.currentTimeMillis()+ ".jpg";
+                Intent irParaCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                Uri localFoto = Uri.fromFile(new File(localArquivoFoto));
+                irParaCamera.putExtra(MediaStore.EXTRA_OUTPUT,localFoto);
+                startActivityForResult(irParaCamera,123);
+            }
+        });
     }
 
     @Override
@@ -64,6 +83,19 @@ public class FormularioActivity extends AppCompatActivity {
                 return false;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == TIRA_FOTO){
+            if (resultCode == Activity.RESULT_OK){
+                helper.carregaImagem(this.localArquivoFoto);
+            } else{
+                this.localArquivoFoto = null;
+            }
         }
     }
 }

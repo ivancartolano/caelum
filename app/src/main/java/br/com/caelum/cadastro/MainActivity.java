@@ -1,8 +1,10 @@
 package br.com.caelum.cadastro;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,6 +19,7 @@ import java.util.List;
 
 import br.com.caelum.cadastro.dao.AlunoDao;
 import br.com.caelum.cadastro.modelo.Aluno;
+import br.com.caelum.cadastro.permissao.Permissao;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -24,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Permissao.fazPermissao(this);
 
 //        String[] alunos = {"Natalia", "Patricia", "Vanessa"};
         final ListView lista = (ListView) findViewById(R.id.listaAlunos);
@@ -60,6 +64,11 @@ public class MainActivity extends AppCompatActivity {
         ListView lista = (ListView) findViewById(R.id.listaAlunos);
         AlunoDao dao = new AlunoDao(this);
         List<Aluno> alunos = dao.getLista();
+
+        for (Aluno aluno: alunos){
+            Log.i("Aluno", ""+aluno.getCaminhoFoto());
+        }
+
         dao.close();
         ArrayAdapter<Aluno> adapter = new ArrayAdapter<Aluno>(this, android.R.layout.simple_list_item_1, alunos);
         lista.setAdapter(adapter);
@@ -91,11 +100,33 @@ public class MainActivity extends AppCompatActivity {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
         final ListView lista = (ListView) findViewById(R.id.listaAlunos);
         final Aluno alunoSlelecionado = (Aluno)  lista.getAdapter().getItem(info.position);
-        menu.add("Ligar");
-        menu.add("Enviar SMS");
-        menu.add("Achar no mapa");
-        menu.add("Navegar no site");
-        menu.add(" ");
+
+        MenuItem ligar = menu.add("Ligar");
+        Intent intentLigar = new Intent(Intent.ACTION_CALL);
+        intentLigar.setData(Uri.parse(("tel" + alunoSlelecionado.getTelefone())));
+        ligar.setIntent(intentLigar);
+
+        MenuItem sms = menu.add("Enviar SMS");
+        Intent intentSms = new Intent(Intent.ACTION_VIEW);
+        intentSms.setData(Uri.parse("sms: "+ alunoSlelecionado.getTelefone()));
+        sms.setIntent(intentSms);
+
+        MenuItem mapa = menu.add("Achar no mapa");
+        Intent intentMapa = new Intent(Intent.ACTION_VIEW);
+        intentMapa.setData(Uri.parse("geo:0,0?z=14&q=" + alunoSlelecionado.getEndereco()));
+        mapa.setIntent(intentMapa);
+
+        MenuItem site = menu.add("Navegar no site");
+        Intent intentSite = new Intent(Intent.ACTION_VIEW);
+        String pagina = alunoSlelecionado.getSite();
+
+        if(!pagina.startsWith("http://")){
+            pagina = "http://" + pagina;
+        }
+        intentSite.setData(Uri.parse(pagina));
+
+        site.setIntent(intentSite);
+        //menu.add(" ");
 
         MenuItem deletar = menu.add("Deletar");
         deletar.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
