@@ -49,12 +49,12 @@ public class ListaAlunosAdapter extends BaseAdapter{
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View v = LayoutInflater.from(ctx).inflate(R.layout.item,null);
-        //ImageView foto = (ImageView) v.findViewById(R.id.foto);
-        //TextView nome = (TextView) v.findViewById(R.id.nome);
+        ImageView foto = (ImageView) v.findViewById(R.id.item_foto);
+        TextView nome = (TextView) v.findViewById(R.id.item_nome);
         Aluno a = alunos.get(position);
-        //if (a.getFoto!= null)
-        //    foto.setImageBitmap(BitmapFactory.decodeFile(a.getFoto()));
-        //nome.setText(a.getNome());
+        if (a.getCaminhoFoto()!= null)
+            foto.setImageBitmap(BitmapFactory.decodeFile(a.getCaminhoFoto()));
+        nome.setText(a.getNome());
         TextView telefone = (TextView) v.findViewById(R.id.telefone);
         if(telefone != null)
             telefone.setText(a.getTelefone());

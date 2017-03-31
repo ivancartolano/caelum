@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import br.com.caelum.cadastro.adapters.ListaAlunosAdapter;
 import br.com.caelum.cadastro.dao.AlunoDao;
 import br.com.caelum.cadastro.modelo.Aluno;
 import br.com.caelum.cadastro.permissao.Permissao;
@@ -70,13 +71,16 @@ public class MainActivity extends AppCompatActivity {
         }
 
         dao.close();
-        ArrayAdapter<Aluno> adapter = new ArrayAdapter<Aluno>(this, android.R.layout.simple_list_item_1, alunos);
+        //ArrayAdapter<Aluno> adapter = new ArrayAdapter<Aluno>(this, android.R.layout.simple_list_item_1, alunos);
+        //ListaAlunosAdapter adapter = new ListaAlunosAdapter(this,alunos);
+        ListaAlunosAdapter adapter = new ListaAlunosAdapter(this);
         lista.setAdapter(adapter);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuItem item = menu.add("MeuMenu");
+        MenuItem item = menu.add(0,1,0,"MeuMenu");
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -89,7 +93,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
+
+        switch (item.getItemId()){
+            case 1:
+                Intent provas = new Intent(this, ProvasActivity.class);
+                startActivity(provas);
+                return true;
+        }
         return super.onOptionsItemSelected(item);
+
     }
 
     @Override
